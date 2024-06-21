@@ -10,7 +10,8 @@ WORKDIR /usr/src/app
 # Copy application dependency manifests to the container image.
 # A wildcard is used to ensure copying both package.json AND package-lock.json (when available).
 # Copying this first prevents re-running npm install on every code change.
-COPY --chown=node:node package*.json ./
+COPY --chown=node:node package.json ./
+COPY --chown=node:node yarn.lock ./
 
 # Skip chromium download with puppeteer on yarn install
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true  \
@@ -34,7 +35,8 @@ FROM node:18-alpine As build
 # Set workdir
 WORKDIR /usr/src/app
 
-COPY --chown=node:node package*.json ./
+COPY --chown=node:node package.json ./
+COPY --chown=node:node yarn.lock ./
 
 # In order to run `npm run build` we need access to the Nest CLI which is a dev dependency. In the previous development stage we ran `npm ci` which installed all dependencies, so we can copy over the node_modules directory from the development image
 COPY --chown=node:node --from=development /usr/src/app/node_modules ./node_modules
@@ -70,14 +72,14 @@ RUN apk add --no-cache \
     chromium
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true  \
-  PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser \
+    NODE_OPTIONS="--max_old_space_size=30000 --max-http-header-size=80000"
 
 WORKDIR /usr/src/app
 
 # Copy the bundled code from the build stage to the production image
 COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
 COPY --chown=node:node --from=build /usr/src/app/dist ./dist
-COPY --chown=node:node --from=build /usr/src/app/package.json .
 
 RUN mkdir .wwebjs_auth
 RUN mkdir .wwebjs_cache
