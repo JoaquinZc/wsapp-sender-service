@@ -21,9 +21,9 @@ export class WsappService {
         remotePath:
           "https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html",
       },
-      puppeteer: {
+      /* puppeteer: {
         args: ["--no-sandbox"]
-      }
+      } */
     });
 
     this.client = {

@@ -1,12 +1,11 @@
 import { Body, Controller, Delete, Get, HttpException, HttpStatus, Post, Res, StreamableFile, UseGuards } from '@nestjs/common';
-import { Job, Queue } from 'bull';
+import { Queue } from 'bull';
 import { InjectQueue } from '@nestjs/bull';
 import { image as convertTextoToImageQR } from 'qr-image';
 
 import { WsappService } from './wsapp.service';
 import { SendMessageDto } from './dto/send-message.dto';
 import { Response } from 'express';
-import { InitServiceDto } from './dto/init-service.dto';
 import { WAuthGuard } from './guard/w-auth.guard';
 import { MessageSender } from './interface/message-sender.interface';
 import { sendMessageToMessageSender } from './adaptor/send-message-to-message-sender.adaptor';
@@ -44,7 +43,7 @@ export class WsappController {
   @UseGuards(WAuthGuard)
   @Get()
   getQr(
-    @Res() res,
+    @Res() res: Response,
   ) {
     const qr = this.wsappService.getQr();
 

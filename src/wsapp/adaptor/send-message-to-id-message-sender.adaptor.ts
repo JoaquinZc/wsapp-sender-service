@@ -1,4 +1,4 @@
-import md5 from "md5";
+import * as md5 from 'md5';
 import { SendMessageDto } from "../dto/send-message.dto";
 import { MessageSenderId } from "../interface/message-sender.interface";
 

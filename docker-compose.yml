@@ -1,8 +1,17 @@
 version: '3.8'
 services:
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379"
+    volumes:
+      - redis-data:/data
+
   app:
-    container_name: app
+    restart: unless-stopped
     build: .
+    privileged: true
     ports:
       - "8822:3000"
     environment:
@@ -15,16 +24,6 @@ services:
     volumes:
       - app-data:/usr/src/.wwebjs_auth
 
-  redis:
-    image: redis:latest
-    container_name: redis
-    ports:
-      - "6379"
-    volumes:
-      - redis-data:/data
-
 volumes:
   redis-data:
-    driver: local
   app-data:
-    driver: local
