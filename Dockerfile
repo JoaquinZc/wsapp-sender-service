@@ -91,4 +91,4 @@ USER node
 EXPOSE 3000
 
 # Start the server using the production build
-CMD [ "yarn", "start:prod" ]
+CMD [ "node", "dist/main" ]
