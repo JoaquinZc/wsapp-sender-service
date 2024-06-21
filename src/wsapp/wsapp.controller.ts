@@ -30,14 +30,19 @@ export class WsappController {
   ) {
     const message: MessageSender = sendMessageToMessageSender(data);
 
-    const job = await this.messageQueue.add("message", message, { jobId: message.id });
-    await job.finished();
+    await this.messageQueue.add("message", message, { jobId: message.id });
+    
+    return message.id;
+  }
 
-    const failed = await job.isFailed();
-
-    if(failed) {
-      throw new HttpException("La tarea no se ha completado.", HttpStatus.GATEWAY_TIMEOUT);
-    }
+  @UseGuards(WAuthGuard)
+  @Post("webhook")
+  handleWebhook(
+    @Res() response: Response,
+  ) {
+    this.messageQueue.once("complete", (jobId: string) => {
+      response.end(jobId);
+    });  
   }
 
   @UseGuards(WAuthGuard)
