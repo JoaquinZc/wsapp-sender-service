@@ -3,8 +3,8 @@ import { WsappService } from './wsapp.service';
 import { WsappController } from './wsapp.controller';
 import { BullModule, InjectQueue } from '@nestjs/bull';
 import { WsappProcessor } from './wsapp.processor';
-import { SendMessageDto } from './dto/send-message.dto';
 import { Queue } from 'bull';
+import { MessageSender } from './interface/message-sender.interface';
 
 @Module({
   imports: [
@@ -24,7 +24,7 @@ import { Queue } from 'bull';
 export class WsappModule implements OnModuleDestroy, OnModuleInit {
   constructor(
     private readonly wsappService: WsappService,
-    @InjectQueue('wsapp') private readonly messageQueue: Queue<SendMessageDto>
+    @InjectQueue('wsapp') private readonly messageQueue: Queue<MessageSender>
   ) {}
 
   public async onModuleInit() {

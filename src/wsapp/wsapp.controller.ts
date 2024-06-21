@@ -1,11 +1,15 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Post, Res, StreamableFile } from '@nestjs/common';
-import { Queue } from 'bull';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Post, Res, StreamableFile, UseGuards } from '@nestjs/common';
+import { Job, Queue } from 'bull';
 import { InjectQueue } from '@nestjs/bull';
 import { image as convertTextoToImageQR } from 'qr-image';
 
 import { WsappService } from './wsapp.service';
 import { SendMessageDto } from './dto/send-message.dto';
 import { Response } from 'express';
+import { InitServiceDto } from './dto/init-service.dto';
+import { WAuthGuard } from './guard/w-auth.guard';
+import { MessageSender } from './interface/message-sender.interface';
+import { sendMessageToMessageSender } from './adaptor/send-message-to-message-sender.adaptor';
 
 @Controller('wsapp')
 export class WsappController {
@@ -15,21 +19,29 @@ export class WsappController {
   ) {}
 
   @Post()
+  @UseGuards(WAuthGuard)
   init() {
     this.wsappService.init();
   }
 
+  @UseGuards(WAuthGuard)
   @Post("send")
-  async sendMessage(@Body() data: SendMessageDto) {
-    const job = await this.messageQueue.add("message", data);
+  async sendMessage(
+    @Body() data: SendMessageDto,
+  ) {
+    const message: MessageSender = sendMessageToMessageSender(data);
+    
+    const job = await this.messageQueue.add("message", message, { jobId: message.id });
+    await job.finished();
 
-    /* const completed = await job.isCompleted()
+    const completed = await job.isCompleted()
 
     if(!completed) {
       throw new HttpException("La tarea no se ha completado.", HttpStatus.GATEWAY_TIMEOUT);
-    } */
+    }
   }
 
+  @UseGuards(WAuthGuard)
   @Get()
   getQr(
     @Res() res: Response,
@@ -54,6 +66,7 @@ export class WsappController {
     image.pipe(res)
   }
 
+  @UseGuards(WAuthGuard)
   @Delete()
   async end() {
     await this.wsappService.logut();

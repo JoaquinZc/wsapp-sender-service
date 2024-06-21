@@ -4,22 +4,27 @@ services:
     container_name: app
     build: .
     ports:
-      - "4505:3000"
+      - "8822:3000"
     environment:
+      - PORT=3000
       - NODE_ENV=production
       - REDIS_HOST=redis
       - REDIS_PORT=6381
     depends_on:
       - redis
+    volumes:
+      - app-data:/usr/src/.wwebjs_auth
 
   redis:
     image: redis:latest
     container_name: redis
     ports:
-      - "6381:6379"
+      - "6379"
     volumes:
       - redis-data:/data
 
 volumes:
   redis-data:
+    driver: local
+  app-data:
     driver: local

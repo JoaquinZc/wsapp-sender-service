@@ -1,7 +1,7 @@
 import { Injectable, Logger, Scope } from '@nestjs/common';
 import { Client, LocalAuth } from 'whatsapp-web.js';
 import { Wsapp, WsappStatus } from './interface/wsapp.interface';
-import { SendMessageDto } from './dto/send-message.dto';
+import { MessageSender } from './interface/message-sender.interface';
 
 @Injectable({ scope: Scope.DEFAULT })
 export class WsappService {
@@ -21,6 +21,9 @@ export class WsappService {
         remotePath:
           "https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html",
       },
+      /* puppeteer: {
+        args: ["--no-sandbox"]
+      } */
     });
 
     this.client = {
@@ -109,7 +112,7 @@ export class WsappService {
     this.wsapp.removeAllListeners("ready");
   }
 
-  public async sendMessage(message: SendMessageDto): Promise<boolean> {
+  public async sendMessage(message: MessageSender): Promise<boolean> {
     const normalize = { ...message };
 
     if(normalize.destiny.indexOf("@c.us") === -1) {
