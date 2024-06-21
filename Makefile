@@ -1,5 +1,5 @@
 deploy:
-	docker compose up --build -detach
+	docker compose up --build --detach
 undeploy:
 	docker compose down
 stop:
