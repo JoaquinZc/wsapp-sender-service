@@ -30,7 +30,7 @@ export class WsappController {
     @Body() data: SendMessageDto,
   ) {
     const message: MessageSender = sendMessageToMessageSender(data);
-    
+
     const job = await this.messageQueue.add("message", message, { jobId: message.id });
     await job.finished();
 
@@ -44,7 +44,7 @@ export class WsappController {
   @UseGuards(WAuthGuard)
   @Get()
   getQr(
-    @Res() res: Response,
+    @Res() res,
   ) {
     const qr = this.wsappService.getQr();
 
