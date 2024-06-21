@@ -19,8 +19,6 @@ import loadConfig from "./load.config";
         redis: {
           host: configService.get("redis.host", "localhost"),
           port: configService.get("redis.port", 6381),
-          maxRetriesPerRequest: null,
-          enableReadyCheck: false,
         },
       }),
     }),

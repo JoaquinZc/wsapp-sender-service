@@ -1,8 +1,8 @@
 version: '3.8'
 services:
   redis:
+    restart: unless-stopped
     image: redis:latest
-    container_name: redis
     ports:
       - "6379"
     volumes:
@@ -15,15 +15,17 @@ services:
     ports:
       - "8822:3000"
     environment:
-      - PORT=3000
+      - PORT=8822
       - NODE_ENV=production
       - REDIS_HOST=redis
-      - REDIS_PORT=6381
+      - REDIS_PORT=6379
     depends_on:
       - redis
     volumes:
       - app-data:/usr/src/.wwebjs_auth
+      - app-cache:/usr/src/.wwebjs_cache
 
 volumes:
   redis-data:
   app-data:
+  app-cache:

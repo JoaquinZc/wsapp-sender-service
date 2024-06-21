@@ -1,6 +1,10 @@
-export default () => ({
-  redis: {
-    host: process.env.REDIS_HOST || 'localhost',
-    port: parseInt(process.env.REDIS_PORT || "6381")
-  },
-});
+export default () => {
+  const host = process.env.REDIS_HOST || 'localhost';
+  const port = parseInt(process.env.REDIS_PORT || "6381");
+  
+  return {
+    redis: {
+      host, port
+    },
+  };
+};

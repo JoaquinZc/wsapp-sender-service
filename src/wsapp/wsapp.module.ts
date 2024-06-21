@@ -19,7 +19,6 @@ import { MessageSender } from './interface/message-sender.interface';
   ],
   providers: [WsappService, WsappProcessor],
   controllers: [WsappController],
-  exports: [WsappService],
 })
 export class WsappModule implements OnModuleDestroy, OnModuleInit {
   constructor(

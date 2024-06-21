@@ -33,9 +33,9 @@ export class WsappController {
     const job = await this.messageQueue.add("message", message, { jobId: message.id });
     await job.finished();
 
-    const completed = await job.isCompleted()
+    const failed = await job.isFailed();
 
-    if(!completed) {
+    if(failed) {
       throw new HttpException("La tarea no se ha completado.", HttpStatus.GATEWAY_TIMEOUT);
     }
   }
