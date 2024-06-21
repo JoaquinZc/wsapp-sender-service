@@ -40,7 +40,7 @@ export class WsappController {
   handleWebhook(
     @Res() response: Response,
   ) {
-    this.messageQueue.once("complete", (jobId: string) => {
+    this.messageQueue.once("completed", (jobId: string) => {
       response.end(jobId);
     });  
   }
