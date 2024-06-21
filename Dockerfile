@@ -13,7 +13,8 @@ WORKDIR /usr/src/app
 COPY --chown=node:node package*.json ./
 
 # Skip chromium download with puppeteer on yarn install
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true  \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 # Install app dependencies using the `npm ci` command instead of `npm install`
 RUN yarn install
@@ -41,7 +42,8 @@ COPY --chown=node:node --from=development /usr/src/app/node_modules ./node_modul
 COPY --chown=node:node . .
 
 # SET CHROMIUM CONFIG
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true  \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 # Run the build command which creates the production bundle
 RUN yarn build
@@ -66,7 +68,8 @@ RUN apk add --no-cache \
     ttf-freefont \
     chromium
 
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true  \
+  PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 WORKDIR /usr/src/app
 
