@@ -2,6 +2,8 @@ Dockerfile
 .dockerignore
 node_modules
 npm-debug.log
-dist
+/dist
 docker-compose.yml
 Makefile
+/.wwebjs_auth
+/.wwebjs_cache
