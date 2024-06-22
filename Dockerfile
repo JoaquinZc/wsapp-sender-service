@@ -75,6 +75,8 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true  \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser \
     NODE_OPTIONS="--max_old_space_size=30000 --max-http-header-size=80000"
 
+RUN chown -R node:node /usr/src/app
+
 WORKDIR /usr/src/app
 
 RUN mkdir .wwebjs_auth
@@ -83,6 +85,7 @@ RUN chown -R node:node /usr/src/app/.wwebjs_auth
 RUN chown -R node:node /usr/src/app/.wwebjs_cache
 
 # Copy the bundled code from the build stage to the production image
+COPY --chown=node:node package.json ./
 COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
 COPY --chown=node:node --from=build /usr/src/app/dist ./dist
 
@@ -91,4 +94,4 @@ USER node
 EXPOSE 3000
 
 # Start the server using the production build
-CMD [ "node", "dist/main" ]
+CMD [ "yarn", "start:prod" ]

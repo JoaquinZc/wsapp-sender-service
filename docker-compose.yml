@@ -6,7 +6,7 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - mongodb_data:/data/db
+      - mongodbdata:/data/db
     environment:
       MONGO_INITDB_ROOT_USERNAME: wsapp
       MONGO_INITDB_ROOT_PASSWORD: hola123xD
@@ -18,7 +18,7 @@ services:
     ports:
       - "6379"
     volumes:
-      - redis-data:/data
+      - redisdata:/data
 
   app:
     restart: unless-stopped
@@ -36,11 +36,11 @@ services:
       - redis
       - mongo
     volumes:
-      - app-data:/usr/src/.wwebjs_auth
-      - app-cache:/usr/src/.wwebjs_cache
+      - appdata:/usr/src/.wwebjs_auth
+      - appcache:/usr/src/.wwebjs_cache
 
 volumes:
-  redis-data:
-  app-data:
-  app-cache:
-  mongodb_data:
+  redisdata:
+  appdata:
+  appcache:
+  mongodbdata:
