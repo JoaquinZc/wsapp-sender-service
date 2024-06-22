@@ -75,8 +75,6 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true  \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser \
     NODE_OPTIONS="--max_old_space_size=30000 --max-http-header-size=80000"
 
-RUN chown -R node:node /usr/src/app
-
 WORKDIR /usr/src/app
 
 RUN mkdir .wwebjs_auth
@@ -88,6 +86,8 @@ RUN chown -R node:node /usr/src/app/.wwebjs_cache
 COPY --chown=node:node package.json ./
 COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
 COPY --chown=node:node --from=build /usr/src/app/dist ./dist
+
+RUN chown -R node:node /usr/src/app
 
 USER node
 
