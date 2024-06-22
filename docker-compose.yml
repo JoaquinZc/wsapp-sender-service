@@ -1,5 +1,17 @@
 version: '3.8'
 services:
+  mongo:
+    restart: unless-stopped
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: wsapp
+      MONGO_INITDB_ROOT_PASSWORD: hola123xD
+      MONGO_INITDB_DATABASE: wsapp
+
   redis:
     restart: unless-stopped
     image: redis:latest
@@ -19,8 +31,10 @@ services:
       - NODE_ENV=production
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - MONGO_URI=mongodb://wsapp:hola123xD@localhost:27017/wsapp
     depends_on:
       - redis
+      - mongo
     volumes:
       - app-data:/usr/src/.wwebjs_auth
       - app-cache:/usr/src/.wwebjs_cache
@@ -29,3 +43,4 @@ volumes:
   redis-data:
   app-data:
   app-cache:
+  mongodb_data:

@@ -1,10 +1,14 @@
 import { Module, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { BullModule, InjectQueue } from '@nestjs/bull';
+import { MongooseModule } from '@nestjs/mongoose';
+import { Queue } from 'bull';
+
 import { WsappService } from './wsapp.service';
 import { WsappController } from './wsapp.controller';
-import { BullModule, InjectQueue } from '@nestjs/bull';
 import { WsappProcessor } from './wsapp.processor';
-import { Queue } from 'bull';
 import { MessageSender } from './interface/message-sender.interface';
+import { BackupWsapp, BackupWsappSchema } from './schema/backup-wsapp.schema';
+import { BackupWsappService } from './backup-wsapp.service';
 
 @Module({
   imports: [
@@ -16,8 +20,12 @@ import { MessageSender } from './interface/message-sender.interface';
         removeOnComplete: true,
       },
     }),
+    MongooseModule.forFeature([{
+      name: BackupWsapp.name,
+      schema: BackupWsappSchema,
+    }])
   ],
-  providers: [WsappService, WsappProcessor],
+  providers: [WsappService, WsappProcessor, BackupWsappService],
   controllers: [WsappController],
 })
 export class WsappModule implements OnModuleDestroy, OnModuleInit {

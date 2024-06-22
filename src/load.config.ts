@@ -1,10 +1,11 @@
 export default () => {
-  const host = process.env.REDIS_HOST || 'localhost';
-  const port = parseInt(process.env.REDIS_PORT || "6381");
-  
   return {
     redis: {
-      host, port
+      host: process.env.REDIS_HOST || 'localhost',
+      port: parseInt(process.env.REDIS_PORT || "6381"),
     },
+    mongo: {
+      uri: process.env.MONGO_URI || 'mongodb://localhost/wsapp'
+    }
   };
 };

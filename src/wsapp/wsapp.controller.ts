@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Post, Res, StreamableFile, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Post, Query, Res, StreamableFile, UseGuards } from '@nestjs/common';
 import { Queue } from 'bull';
 import { InjectQueue } from '@nestjs/bull';
 import { image as convertTextoToImageQR } from 'qr-image';
@@ -9,11 +9,13 @@ import { Response } from 'express';
 import { WAuthGuard } from './guard/w-auth.guard';
 import { MessageSender } from './interface/message-sender.interface';
 import { sendMessageToMessageSender } from './adaptor/send-message-to-message-sender.adaptor';
+import { BackupWsappService } from './backup-wsapp.service';
 
 @Controller('wsapp')
 export class WsappController {
   constructor(
     private readonly wsappService: WsappService,
+    private backupWsappService: BackupWsappService,
     @InjectQueue('wsapp') private readonly messageQueue: Queue<SendMessageDto>,
   ) {}
 
@@ -36,13 +38,15 @@ export class WsappController {
   }
 
   @UseGuards(WAuthGuard)
-  @Post("webhook")
-  handleWebhook(
-    @Res() response: Response,
+  @Get("status")
+  async getStatus(
+    @Query("id") id: string | undefined,
   ) {
-    this.messageQueue.once("completed", (jobId: string) => {
-      response.end(jobId);
-    });  
+    if(!id) {
+      throw new HttpException("Es necesario pasar una id", HttpStatus.BAD_REQUEST);
+    }
+    
+    return await this.backupWsappService.getStatus(id);
   }
 
   @UseGuards(WAuthGuard)
