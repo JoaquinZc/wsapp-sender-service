@@ -3,6 +3,7 @@ import { BackupWsapp, BackupWsappDocument, BackupWsappStatus } from './schema/ba
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { SyncBackupDto } from './dto/sync-backup.dto';
+import { Cron } from '@nestjs/schedule';
 
 @Injectable({ scope: Scope.DEFAULT })
 export class BackupWsappService {
@@ -30,5 +31,10 @@ export class BackupWsappService {
     }
 
     return response.status;
+  }
+
+  @Cron("0 0 23 * * *")
+  async clearDb(): Promise<void> {
+    await this.backupWsappModel.deleteMany({});
   }
 }

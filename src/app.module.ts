@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 import { WsappModule } from './wsapp/wsapp.module';
 import loadConfig from "./load.config";
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import loadConfig from "./load.config";
         uri: configService.get("mongo.uri")
       })
     }),
+    ScheduleModule.forRoot(),
     WsappModule,
   ],
 })
