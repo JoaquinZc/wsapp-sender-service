@@ -36,9 +36,11 @@ services:
       - redis
       - mongo
     volumes:
-      - ./.wwebjs_auth:/usr/src/.wwebjs_auth
-      - ./.wwebjs_cache:/usr/src/.wwebjs_cache
+      - appauth:/usr/src/app/.wwebjs_auth
+      - appcache:/usr/src/app/.wwebjs_cache
 
 volumes:
   redisdata:
+  appauth:
+  appcache:
   mongodbdata:
