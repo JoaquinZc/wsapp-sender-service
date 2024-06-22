@@ -31,7 +31,7 @@ services:
       - NODE_ENV=production
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - MONGO_URI=mongodb://wsapp:hola123xD@mongo:27017/wsapp
+      - MONGO_URI=mongodb://wsapp:hola123xD@mongo:27017/
     depends_on:
       - redis
       - mongo
