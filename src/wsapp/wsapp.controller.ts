@@ -46,7 +46,15 @@ export class WsappController {
       throw new HttpException("Es necesario pasar una id", HttpStatus.BAD_REQUEST);
     }
     
-    return await this.backupWsappService.getStatus(id);
+    const status = await this.backupWsappService.getStatus(id);
+
+    if(status === "none") {
+      if(!(await this.messageQueue.getJob(id))) {
+        return "waiting";
+      }
+    }
+
+    return status;
   }
 
   @UseGuards(WAuthGuard)
