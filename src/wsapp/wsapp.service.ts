@@ -124,6 +124,7 @@ export class WsappService {
     }
 
     try {
+      await this.wsapp.sendSeen(normalize.destiny);
       await this.wsapp.sendMessage(normalize.destiny, normalize.message);
     }
     catch(e) {
