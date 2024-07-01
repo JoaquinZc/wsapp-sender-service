@@ -2,7 +2,7 @@
 # BUILD FOR LOCAL DEVELOPMENT
 ###################
 
-FROM node:18-alpine As development
+FROM node:20-alpine As development
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -30,7 +30,7 @@ USER node
 # BUILD FOR PRODUCTION
 ###################
 
-FROM node:18-alpine As build
+FROM node:20-alpine As build
 
 # Set workdir
 WORKDIR /usr/src/app
@@ -62,7 +62,7 @@ USER node
 # PRODUCTION
 ###################
 
-FROM node:18-alpine As production
+FROM node:20-alpine As production
 
 # Install chromium
 RUN apk add --no-cache \
