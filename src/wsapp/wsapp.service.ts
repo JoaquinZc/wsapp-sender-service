@@ -19,7 +19,7 @@ export class WsappService {
       webVersionCache: {
         type: "remote",
         remotePath:
-          "https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html",
+          "https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.3000.1012058694-alpha.html",
       },
       /* puppeteer: {
         args: ["--no-sandbox"]
