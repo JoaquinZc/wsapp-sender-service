@@ -2,7 +2,7 @@
 # BUILD FOR LOCAL DEVELOPMENT
 ###################
 
-FROM node:20-alpine As development
+FROM node:24-alpine As development
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -30,7 +30,7 @@ USER node
 # BUILD FOR PRODUCTION
 ###################
 
-FROM node:20-alpine As build
+FROM node:24-alpine As build
 
 # Set workdir
 WORKDIR /usr/src/app
@@ -62,7 +62,7 @@ USER node
 # PRODUCTION
 ###################
 
-FROM node:20-alpine As production
+FROM node:24-alpine As production
 
 # Install chromium
 RUN apk add --no-cache \
@@ -86,6 +86,7 @@ RUN chown -R node:node /usr/src/app/.wwebjs_cache
 COPY --chown=node:node package.json ./
 COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
 COPY --chown=node:node --from=build /usr/src/app/dist ./dist
+COPY --chown=node:node --from=build /usr/src/app/data ./data
 
 #RUN chown -R node:node /usr/src/app
 

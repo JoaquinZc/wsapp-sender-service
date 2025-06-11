@@ -2,6 +2,11 @@ import { Injectable, Logger, Scope } from '@nestjs/common';
 import { Client, LocalAuth } from 'whatsapp-web.js';
 import { Wsapp, WsappStatus } from './interface/wsapp.interface';
 import { MessageSender } from './interface/message-sender.interface';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import {
+  NEW_MESSAGE_EVENT_NAME,
+  NewMessageEvent,
+} from './event/new-message.event';
 
 @Injectable({ scope: Scope.DEFAULT })
 export class WsappService {
@@ -11,7 +16,7 @@ export class WsappService {
 
   static timeoutLogin = 1000 * 60 * 2; // 2minutos
 
-  constructor() {
+  constructor(private readonly eventEmitter: EventEmitter2) {
     this.wsapp = new Client({
       authStrategy: new LocalAuth({
         clientId: 'sender-message',
@@ -76,6 +81,23 @@ export class WsappService {
       this.client.status = WsappStatus.READY;
       this._onReady && this._onReady(true);
       clearTimeout(timer);
+    });
+
+    this.wsapp.on('message_create', (data) => {
+      if (data.body === 'get-id-chat') {
+        return data.reply(data.from || data.to);
+      }
+    });
+
+    this.wsapp.on('message', (data) => {
+      this.eventEmitter.emit(NEW_MESSAGE_EVENT_NAME, {
+        body: data.body,
+        fromMe: data.fromMe,
+        type: data.type,
+        author: data.author,
+        from: data.from,
+        to: data.to,
+      } as NewMessageEvent);
     });
 
     // Inicializar los eventos por defecto de control

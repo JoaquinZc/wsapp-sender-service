@@ -6,6 +6,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { WsappModule } from './wsapp/wsapp.module';
 import loadConfig from './load.config';
 import { ScheduleModule } from '@nestjs/schedule';
+import { RepeatersModule } from './repeaters/repeaters.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -31,7 +33,9 @@ import { ScheduleModule } from '@nestjs/schedule';
       }),
     }),
     ScheduleModule.forRoot(),
+    EventEmitterModule.forRoot(),
     WsappModule,
+    RepeatersModule,
   ],
 })
 export class AppModule {}
