@@ -1,8 +1,11 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { HydratedDocument } from "mongoose";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { HydratedDocument } from 'mongoose';
 
-export type BackupWsappStatus = "completed" | "error";
-export type BackupWsappDocument = HydratedDocument<BackupWsapp, { _id: string }>;
+export type BackupWsappStatus = 'completed' | 'error';
+export type BackupWsappDocument = HydratedDocument<
+  BackupWsapp,
+  { _id: string }
+>;
 
 @Schema({ _id: false })
 export class BackupWsapp {

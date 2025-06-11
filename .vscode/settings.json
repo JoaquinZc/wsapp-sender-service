@@ -1,0 +1,12 @@
+{
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "eslint.validate": [
+    "typescript"
+  ],
+  "files.eol": "\n",
+  "editor.quickSuggestions": {
+    "strings": "on"
+  }
+}

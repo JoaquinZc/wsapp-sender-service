@@ -9,13 +9,13 @@ export class WAuthGuard implements CanActivate {
   ): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest() as Request;
 
-    if(!("x-auth" in request.headers)) {
+    if (!('x-auth' in request.headers)) {
       return false;
     }
 
     const auth = request.headers['x-auth'];
 
-    if(auth !== "hola123xD") {
+    if (auth !== 'hola123xD') {
       return false;
     }
 

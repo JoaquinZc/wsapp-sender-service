@@ -1,8 +1,8 @@
 export enum WsappStatus {
   OFF,
   WAITNG,
-  READY
-};
+  READY,
+}
 
 export interface Wsapp {
   status: WsappStatus;

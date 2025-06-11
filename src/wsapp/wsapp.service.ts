@@ -14,12 +14,12 @@ export class WsappService {
   constructor() {
     this.wsapp = new Client({
       authStrategy: new LocalAuth({
-        clientId: "sender-message",
+        clientId: 'sender-message',
       }),
       webVersionCache: {
-        type: "remote",
+        type: 'remote',
         remotePath:
-          "https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.3000.1014590669-alpha.html",
+          'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.3000.1014590669-alpha.html',
       },
       /* puppeteer: {
         args: ["--no-sandbox"]
@@ -35,10 +35,10 @@ export class WsappService {
   }
 
   public getQr(): string | undefined {
-    if(this.client.status === WsappStatus.WAITNG) {
+    if (this.client.status === WsappStatus.WAITNG) {
       return this.client.qrCode;
     }
-    
+
     return undefined;
   }
 
@@ -50,8 +50,8 @@ export class WsappService {
     // Si el estado no es apagado, entonces
     // no se necesita inicializar
 
-    if(this.client.status !== WsappStatus.OFF) {
-      return ;
+    if (this.client.status !== WsappStatus.OFF) {
+      return;
     }
 
     // Aquí se inicializa el chromium y pueden pasar dos cosas
@@ -62,17 +62,17 @@ export class WsappService {
 
     // Cambiamos el estado
     this.client.status = WsappStatus.WAITNG;
-    Logger.log(">> [Wsapp service]: Is Waiting...");
+    Logger.log('>> [Wsapp service]: Is Waiting...');
 
     // Creamos el Timeout, si no se cumple en cierto tiempo finaliza el servicio
     // y se requiere volver a iniciar
-    let timer = setTimeout(() => this.end(), WsappService.timeoutLogin);
+    const timer = setTimeout(() => this.end(), WsappService.timeoutLogin);
 
     // Escuchamos una vez el evento "ready" apartir del momento que se inicia,
     // si el evento pasa a "ready" que sería ya con la cuenta iniciada
     // entonces cambiará el estado y eliminará el timeout
-    this.wsapp.once("ready", () => {
-      Logger.log(">> [Wsapp service]: Is ready");
+    this.wsapp.once('ready', () => {
+      Logger.log('>> [Wsapp service]: Is ready');
       this.client.status = WsappStatus.READY;
       this._onReady && this._onReady(true);
       clearTimeout(timer);
@@ -90,7 +90,7 @@ export class WsappService {
   public async end(): Promise<void> {
     await this.wsapp.destroy();
     this.client.status = WsappStatus.OFF;
-    Logger.log(">> [Wsapp service]: Is end.");
+    Logger.log('>> [Wsapp service]: Is end.');
     this._onReady && this._onReady(false);
 
     // Eliminar los eventos.
@@ -98,36 +98,35 @@ export class WsappService {
   }
 
   private initEvents(): void {
-    this.wsapp.addListener("qr", (qr: string) => {
+    this.wsapp.addListener('qr', (qr: string) => {
       Logger.log(`>> [Wsapp service]: QR ${qr}`);
       this.client.qrCode = qr;
     });
 
-    this.wsapp.addListener("disconnected", () => this.end());
+    this.wsapp.addListener('disconnected', () => this.end());
   }
 
   private removeEvents(): void {
-    this.wsapp.removeAllListeners("qr");
-    this.wsapp.removeAllListeners("disconnected");
-    this.wsapp.removeAllListeners("ready");
+    this.wsapp.removeAllListeners('qr');
+    this.wsapp.removeAllListeners('disconnected');
+    this.wsapp.removeAllListeners('ready');
   }
 
   public async sendMessage(message: MessageSender): Promise<boolean> {
     const normalize = { ...message };
 
-    if(normalize.destiny.indexOf("@c.us") === -1) {
+    if (normalize.destiny.indexOf('@c.us') === -1) {
       normalize.destiny = `${normalize.destiny}@c.us`;
     }
 
-    if(normalize.destiny.at(0) === "0") {
+    if (normalize.destiny.at(0) === '0') {
       normalize.destiny = `593${normalize.destiny.slice(1, normalize.destiny.length)}`;
     }
 
     try {
       await this.wsapp.sendSeen(normalize.destiny);
       await this.wsapp.sendMessage(normalize.destiny, normalize.message);
-    }
-    catch(e) {
+    } catch (e) {
       return false;
     }
 

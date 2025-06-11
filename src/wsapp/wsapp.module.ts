@@ -20,10 +20,12 @@ import { BackupWsappService } from './backup-wsapp.service';
         removeOnComplete: true,
       },
     }),
-    MongooseModule.forFeature([{
-      name: BackupWsapp.name,
-      schema: BackupWsappSchema,
-    }])
+    MongooseModule.forFeature([
+      {
+        name: BackupWsapp.name,
+        schema: BackupWsappSchema,
+      },
+    ]),
   ],
   providers: [WsappService, WsappProcessor, BackupWsappService],
   controllers: [WsappController],
@@ -31,17 +33,14 @@ import { BackupWsappService } from './backup-wsapp.service';
 export class WsappModule implements OnModuleDestroy, OnModuleInit {
   constructor(
     private readonly wsappService: WsappService,
-    @InjectQueue('wsapp') private readonly messageQueue: Queue<MessageSender>
+    @InjectQueue('wsapp') private readonly messageQueue: Queue<MessageSender>,
   ) {}
 
   public async onModuleInit() {
     await this.messageQueue.pause();
 
     this.wsappService.setHandleReady(async (isReady) => {
-      await (
-        isReady ? this.messageQueue.resume() :
-        this.messageQueue.pause()
-      )
+      await (isReady ? this.messageQueue.resume() : this.messageQueue.pause());
     });
   }
 

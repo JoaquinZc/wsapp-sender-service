@@ -1,4 +1,15 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Post, Query, Res, StreamableFile, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpException,
+  HttpStatus,
+  Post,
+  Query,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { Queue } from 'bull';
 import { InjectQueue } from '@nestjs/bull';
 import { image as convertTextoToImageQR } from 'qr-image';
@@ -26,31 +37,30 @@ export class WsappController {
   }
 
   @UseGuards(WAuthGuard)
-  @Post("send")
-  async sendMessage(
-    @Body() data: SendMessageDto,
-  ) {
+  @Post('send')
+  async sendMessage(@Body() data: SendMessageDto) {
     const message: MessageSender = sendMessageToMessageSender(data);
 
-    await this.messageQueue.add("message", message, { jobId: message.id });
-    
+    await this.messageQueue.add('message', message, { jobId: message.id });
+
     return message.id;
   }
 
   @UseGuards(WAuthGuard)
-  @Get("status")
-  async getStatus(
-    @Query("id") id: string | undefined,
-  ) {
-    if(!id) {
-      throw new HttpException("Es necesario pasar una id", HttpStatus.BAD_REQUEST);
+  @Get('status')
+  async getStatus(@Query('id') id: string | undefined) {
+    if (!id) {
+      throw new HttpException(
+        'Es necesario pasar una id',
+        HttpStatus.BAD_REQUEST,
+      );
     }
-    
+
     const status = await this.backupWsappService.getStatus(id);
 
-    if(status === "none") {
-      if(!(await this.messageQueue.getJob(id))) {
-        return "waiting";
+    if (status === 'none') {
+      if (!(await this.messageQueue.getJob(id))) {
+        return 'waiting';
       }
     }
 
@@ -59,17 +69,18 @@ export class WsappController {
 
   @UseGuards(WAuthGuard)
   @Get()
-  getQr(
-    @Res() res: Response,
-  ) {
+  getQr(@Res() res: Response) {
     const qr = this.wsappService.getQr();
 
-    if(!qr) {
-      throw new HttpException("El QR no está disponible.", HttpStatus.NOT_ACCEPTABLE);
+    if (!qr) {
+      throw new HttpException(
+        'El QR no está disponible.',
+        HttpStatus.NOT_ACCEPTABLE,
+      );
     }
 
-    const image = convertTextoToImageQR(qr, { type: "png", ec_level: "Q" });
-    
+    const image = convertTextoToImageQR(qr, { type: 'png', ec_level: 'Q' });
+
     res.set({
       'Content-Type': 'image/png',
       'Content-Disposition': 'inline; filename="qrcode.png"',
@@ -79,7 +90,7 @@ export class WsappController {
       res.end();
     });
 
-    image.pipe(res)
+    image.pipe(res);
   }
 
   @UseGuards(WAuthGuard)

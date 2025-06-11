@@ -19,13 +19,12 @@ export class WsappProcessor {
 
     const state = await this.wsappService.sendMessage(job.data);
 
-    await this.backupWsappService.sync(new SyncBackupDto(
-      job.id.toString(),
-      state ? 'completed' : 'error',
-    ));
+    await this.backupWsappService.sync(
+      new SyncBackupDto(job.id.toString(), state ? 'completed' : 'error'),
+    );
 
-    if(!state) {
-      throw new Error("Error");
+    if (!state) {
+      throw new Error('Error');
     }
   }
 }

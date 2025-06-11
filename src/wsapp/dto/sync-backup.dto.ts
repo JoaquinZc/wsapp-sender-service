@@ -1,4 +1,4 @@
-import { BackupWsappStatus } from "../schema/backup-wsapp.schema";
+import { BackupWsappStatus } from '../schema/backup-wsapp.schema';
 
 export class SyncBackupDto {
   public readonly modified: Date;
