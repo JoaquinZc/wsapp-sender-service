@@ -5,6 +5,9 @@
 
 /.wwebjs_auth
 
+/data/*
+!/data/1.txt
+
 # Logs
 logs
 *.log
