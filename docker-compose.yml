@@ -28,7 +28,7 @@ services:
       - "8822:3000"
     environment:
       - PORT=8822
-      - NODE_ENV=production
+      #- NODE_ENV=production
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - MONGO_URI=mongodb://wsapp:hola123xD@mongo:27017/
@@ -38,6 +38,7 @@ services:
     volumes:
       - appauth:/usr/src/app/.wwebjs_auth
       - appcache:/usr/src/app/.wwebjs_cache
+      - ./data:/usr/src/app/.wwebjs_cache
 
 volumes:
   redisdata:

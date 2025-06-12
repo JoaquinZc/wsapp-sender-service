@@ -1,0 +1,95 @@
+FROM node:24-slim As development
+WORKDIR /usr/src/app
+COPY --chown=node:node package.json ./
+COPY --chown=node:node yarn.lock ./
+
+#ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+ENV PUPPETEER_SKIP_DOWNLOAD=true
+
+RUN yarn install
+
+COPY --chown=node:node . .
+
+USER node
+
+
+
+# CONSTRUCCIÓN
+
+FROM node:24-slim As build
+
+# Set workdir
+WORKDIR /usr/src/app
+
+COPY --chown=node:node package.json ./
+COPY --chown=node:node yarn.lock ./
+
+COPY --chown=node:node --from=development /usr/src/app/node_modules ./node_modules
+
+COPY --chown=node:node . .
+
+#ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+ENV PUPPETEER_SKIP_DOWNLOAD=true
+
+RUN yarn build
+ENV NODE_ENV production
+
+RUN yarn install --production && yarn cache clean --all
+
+USER node
+
+# Producción
+
+FROM node:24-slim As production
+
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    fonts-liberation \
+    libappindicator3-1 \
+    libasound2 \
+    libatk-bridge2.0-0 \
+    libatk1.0-0 \
+    libcups2 \
+    libdbus-1-3 \
+    libdrm2 \
+    libgbm1 \
+    libgtk-3-0 \
+    libnspr4 \
+    libnss3 \
+    libx11-xcb1 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxrandr2 \
+    xdg-utils \
+    wget \
+    --no-install-recommends && \
+    rm -rf /var/lib/apt/lists/*
+
+#ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true  \
+ENV PUPPETEER_SKIP_DOWNLOAD=true \
+    #PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser \
+    NODE_OPTIONS="--max_old_space_size=30000 --max-http-header-size=80000"
+
+WORKDIR /usr/src/app
+
+RUN mkdir .wwebjs_auth
+RUN mkdir .wwebjs_cache
+RUN chown -R node:node /usr/src/app/.wwebjs_auth
+RUN chown -R node:node /usr/src/app/.wwebjs_cache
+
+# Copy the bundled code from the build stage to the production image
+COPY --chown=node:node package.json ./
+COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
+COPY --chown=node:node --from=build /usr/src/app/dist ./dist
+COPY --chown=node:node --from=build /usr/src/app/data ./data
+
+RUN npx puppeteer install
+
+#RUN chown -R node:node /usr/src/app
+
+USER node
+
+EXPOSE 3000
+
+# Start the server using the production build
+CMD [ "yarn", "start:prod" ]

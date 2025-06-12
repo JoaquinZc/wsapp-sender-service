@@ -2,7 +2,7 @@
 # BUILD FOR LOCAL DEVELOPMENT
 ###################
 
-FROM node:20-slim As development
+FROM node:24-slim As development
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -30,7 +30,7 @@ USER node
 # BUILD FOR PRODUCTION
 ###################
 
-FROM node:20-slim As build
+FROM node:24-slim As build
 
 # Set workdir
 WORKDIR /usr/src/app
@@ -62,35 +62,36 @@ USER node
 # PRODUCTION
 ###################
 
-FROM node:20-slim As production
+FROM node:24-slim As production
 
 # Install Google Chrome Stable and fonts
 # Note: this installs the necessary libs to make the browser work with Puppeteer.
 # Install necessary dependencies for Puppeteer and Chromium
-RUN apt-get update && apt-get install -y \
-    ca-certificates \
-    fonts-liberation \
-    libasound2 \
-    libatk-bridge2.0-0 \
-    libgtk-3-0 \
-    libx11-xcb1 \
-    libxcomposite1 \
-    libxdamage1 \
-    libxrandr2 \
-    libgbm1 \
-    libpango1.0-0 \
-    libnss3 \
-    libxss1 \
-    libxcursor1 \
-    wget \
-    gnupg \
-    # Instalar Chromium desde repositorios
-    chromium \
-    --no-install-recommends \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  fonts-liberation \
+  libasound2 \
+  libatk-bridge2.0-0 \
+  libatk1.0-0 \
+  libcups2 \
+  libdrm2 \
+  libgbm1 \
+  libgtk-3-0 \
+  libnspr4 \
+  libnss3 \
+  libx11-xcb1 \
+  libxcomposite1 \
+  libxdamage1 \
+  libxrandr2 \
+  xdg-utils \
+  libu2f-udev \
+  libxshmfence1 \
+  libglu1-mesa \
+  chromium \
+  && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
-#ENV XDG_CONFIG_HOME=/tmp/.chromium
-#ENV XDG_CACHE_HOME=/tmp/.chromium
+ENV XDG_CONFIG_HOME=/tmp/.chromium
+ENV XDG_CACHE_HOME=/tmp/.chromium
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true  \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium \

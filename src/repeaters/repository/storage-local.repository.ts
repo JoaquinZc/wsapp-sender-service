@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { StorageRepository } from './storage.repository';
 import { RepeaterEntity } from '../entity/repeater.entity';
 import { getPathFromRoot } from 'src/commons/utils/get-path-from-root';
-import fs from 'fs/promises';
+import { writeFile as writeFileFs, readFile as readFileFs } from 'fs/promises';
 import { Repeater } from '../interfaces/repeater.interface';
 import { CreateRepeater } from '../interfaces/create-repeater.interface';
 import { randomUUID } from 'crypto';
@@ -18,7 +18,7 @@ export class StorageLocalRepository extends StorageRepository {
     }
 
     try {
-      const contentString = await fs.readFile(this.pathDB, 'utf8');
+      const contentString = await readFileFs(this.pathDB, 'utf8');
 
       const content = JSON.parse(contentString || '[]') as Repeater[];
 
@@ -27,9 +27,13 @@ export class StorageLocalRepository extends StorageRepository {
   }
 
   private async writeFile(): Promise<void> {
-    await fs.writeFile(
+    await writeFileFs(
       this.pathDB,
-      JSON.stringify(this.repeaters, null, 2),
+      JSON.stringify(
+        this.repeaters.map((item) => item.data),
+        null,
+        2,
+      ),
       'utf8',
     );
   }

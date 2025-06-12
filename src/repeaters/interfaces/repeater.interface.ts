@@ -3,4 +3,5 @@ export interface Repeater {
   receiverHttp: string;
   subscribed?: string[];
   excluding?: string[];
+  timeDelay?: number;
 }

@@ -24,11 +24,13 @@ export class WsappService {
       webVersionCache: {
         type: 'remote',
         remotePath:
-          'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.3000.1014590669-alpha.html',
+          //'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.3000.1014590669-alpha.html',
+          'https://raw.githubusercontent.com/wppconnect-team/wa-version/refs/heads/main/html/2.3000.1023712139-alpha.html',
       },
       /* puppeteer: {
-        args: ["--no-sandbox"]
-      } */
+        //args: ["--no-sandbox"],
+        executablePath: '/usr/bin/chromium-browser',
+      }, */
     });
 
     this.client = {

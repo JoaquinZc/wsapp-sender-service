@@ -1,4 +1,10 @@
-import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { CreateRepeater } from 'src/repeaters/interfaces/create-repeater.interface';
 
 export class CreateRepeaterDto implements CreateRepeater {
@@ -15,4 +21,8 @@ export class CreateRepeaterDto implements CreateRepeater {
   @IsArray()
   @IsString({ each: true })
   excluding?: string[];
+
+  @IsOptional()
+  @IsNumber()
+  timeDelay?: number;
 }

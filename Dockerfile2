@@ -2,7 +2,7 @@
 # BUILD FOR LOCAL DEVELOPMENT
 ###################
 
-FROM node:20-slim As development
+FROM node:24-alpine As development
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -15,7 +15,7 @@ COPY --chown=node:node yarn.lock ./
 
 # Skip chromium download with puppeteer on yarn install
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true  \
-    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 # Install app dependencies using the `npm ci` command instead of `npm install`
 RUN yarn install
@@ -30,7 +30,7 @@ USER node
 # BUILD FOR PRODUCTION
 ###################
 
-FROM node:20-slim As build
+FROM node:24-alpine As build
 
 # Set workdir
 WORKDIR /usr/src/app
@@ -45,7 +45,7 @@ COPY --chown=node:node . .
 
 # SET CHROMIUM CONFIG
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true  \
-    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 # Run the build command which creates the production bundle
 RUN yarn build
@@ -62,38 +62,17 @@ USER node
 # PRODUCTION
 ###################
 
-FROM node:20-slim As production
+FROM node:24-alpine As production
 
-# Install Google Chrome Stable and fonts
-# Note: this installs the necessary libs to make the browser work with Puppeteer.
-# Install necessary dependencies for Puppeteer and Chromium
-RUN apt-get update && apt-get install -y \
-    ca-certificates \
-    fonts-liberation \
-    libasound2 \
-    libatk-bridge2.0-0 \
-    libgtk-3-0 \
-    libx11-xcb1 \
-    libxcomposite1 \
-    libxdamage1 \
-    libxrandr2 \
-    libgbm1 \
-    libpango1.0-0 \
-    libnss3 \
-    libxss1 \
-    libxcursor1 \
-    wget \
-    gnupg \
-    # Instalar Chromium desde repositorios
-    chromium \
-    --no-install-recommends \
-  && rm -rf /var/lib/apt/lists/*
-
-#ENV XDG_CONFIG_HOME=/tmp/.chromium
-#ENV XDG_CACHE_HOME=/tmp/.chromium
+# Install chromium
+RUN apk add --no-cache \
+    udev \
+    ttf-freefont \
+    curl \
+    chromium
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true  \
-    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser \
     NODE_OPTIONS="--max_old_space_size=30000 --max-http-header-size=80000"
 
 WORKDIR /usr/src/app
