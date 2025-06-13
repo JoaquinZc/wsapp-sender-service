@@ -81,10 +81,10 @@ export class RepeatersService {
   @OnEvent(NEW_MESSAGE_EVENT_NAME)
   async getNewMessageEvent(payload: NewMessageEvent) {
     this.logger.log(
-      `New message recieve ${payload.from} (${payload.author} - ${payload.type}): ${payload.body}`,
+      `New message recieve ${payload.chatId} (${payload.author} - ${payload.type}): ${payload.body}`,
     );
 
-    const number = payload.from;
+    const number = payload.chatId;
 
     if (!number) {
       return;

@@ -85,20 +85,33 @@ export class WsappService {
       clearTimeout(timer);
     });
 
-    this.wsapp.on('message_create', (data) => {
+    this.wsapp.on('message_create', async (data) => {
       if (data.body === 'get-id-chat') {
-        return data.reply(data.from || data.to);
+        const chat = await data.getChat();
+        return data.reply(chat.id._serialized);
       }
     });
 
-    this.wsapp.on('message', (data) => {
+    this.wsapp.on('message', async (data) => {
+      const chat = await data.getChat();
+
       this.eventEmitter.emit(NEW_MESSAGE_EVENT_NAME, {
-        body: data.body,
-        fromMe: data.fromMe,
-        type: data.type,
-        author: data.author,
-        from: data.from,
-        to: data.to,
+        messageId: data.id._serialized, // ID única del mensaje
+        body: data.body, // Cuerpo del mensaje
+        type: data.type as string, // Tipo (text, image, etc.)
+        fromMe: data.fromMe, // Si lo envió el bot/usuario actual
+        author: data.author || data.from, // ID del autor (en grupo); si es individual, usa 'from'
+        senderId: data.author || data.from, // ID individual de quien envía
+        chatId: chat.id._serialized, // ID del chat (individual o grupo)
+        isGroup: chat.isGroup || chat.id.server === 'g.us', // Indica si es un grupo
+        groupId: chat.isGroup ? chat.id._serialized : undefined,
+        timestamp: data.timestamp, // Marca de tiempo UNIX
+        hasMedia: data.hasMedia, // Si tiene medios
+        isForwarded: data.isForwarded, // Si fue reenviado
+        isEphemeral: data.isEphemeral, // Si es efímero
+        mentionedIds: data.mentionedIds?.map((item) => item._serialized), // IDs mencionados
+        groupMentions: data.groupMentions, // Menciones de grupo internas
+        links: data.links,
       } as NewMessageEvent);
     });
 
