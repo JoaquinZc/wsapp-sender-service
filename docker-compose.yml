@@ -39,11 +39,13 @@ services:
     volumes:
       - appauth:/usr/src/app/.wwebjs_auth
       - appcache:/usr/src/app/.wwebjs_cache
-      - ./data:/usr/src/app/data
-      - ./public:/usr/src/app/public
+      - appdata:/usr/src/app/data
+      - apppublic:/usr/src/app/public
 
 volumes:
   redisdata:
   appauth:
   appcache:
   mongodbdata:
+  apppublic:
+  appdata:
