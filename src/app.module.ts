@@ -8,12 +8,17 @@ import loadConfig from './load.config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { RepeatersModule } from './repeaters/repeaters.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { getPublicPath } from './commons/utils/get-public-path';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       load: [loadConfig],
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: getPublicPath(),
     }),
     BullModule.forRootAsync({
       imports: [ConfigModule],
