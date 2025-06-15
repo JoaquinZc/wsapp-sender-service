@@ -102,6 +102,7 @@ RUN mkdir .wwebjs_auth
 RUN mkdir .wwebjs_cache
 RUN mkdir public
 RUN mkdir public/images
+
 RUN chown -R node:node /usr/src/app/.wwebjs_auth
 RUN chown -R node:node /usr/src/app/.wwebjs_cache
 RUN chown -R node:node /usr/src/app/public
@@ -111,6 +112,8 @@ COPY --chown=node:node package.json ./
 COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
 COPY --chown=node:node --from=build /usr/src/app/dist ./dist
 COPY --chown=node:node --from=build /usr/src/app/data ./data
+
+RUN chown -R node:node /usr/src/app/data
 
 #RUN chown -R node:node /usr/src/app
 

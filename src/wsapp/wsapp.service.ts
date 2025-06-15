@@ -10,8 +10,8 @@ import {
 } from './event/new-message.event';
 import { extension as mimeExtension } from 'mime-types';
 import { getPublicPath } from 'src/commons/utils/get-public-path';
-import { writeFile } from 'fs/promises';
 import { ConfigService } from '@nestjs/config';
+import { writeFile } from 'src/commons/utils/write-file';
 
 @Injectable({ scope: Scope.DEFAULT })
 export class WsappService {

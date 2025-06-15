@@ -7,6 +7,7 @@
 
 /data/*
 !/data/1.txt
+/public/*
 
 # Logs
 logs
