@@ -1,22 +1,31 @@
 import { Injectable, Logger, Scope } from '@nestjs/common';
-import { Client, LocalAuth } from 'whatsapp-web.js';
+import { Client, LocalAuth, MessageMedia } from 'whatsapp-web.js';
 import { Wsapp, WsappStatus } from './interface/wsapp.interface';
 import { MessageSender } from './interface/message-sender.interface';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
+  MessageQuote,
   NEW_MESSAGE_EVENT_NAME,
   NewMessageEvent,
 } from './event/new-message.event';
+import { extension as mimeExtension } from 'mime-types';
+import { getPublicPath } from 'src/commons/utils/get-public-path';
+import { writeFile } from 'fs/promises';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable({ scope: Scope.DEFAULT })
 export class WsappService {
   private readonly wsapp: Client;
   private readonly client: Wsapp;
   private _onReady?: (isReady: boolean) => void;
+  private meUrl: string;
 
   static timeoutLogin = 1000 * 60 * 2; // 2minutos
 
-  constructor(private readonly eventEmitter: EventEmitter2) {
+  constructor(
+    private readonly eventEmitter: EventEmitter2,
+    configService: ConfigService,
+  ) {
     this.wsapp = new Client({
       authStrategy: new LocalAuth({
         clientId: 'sender-message',
@@ -32,6 +41,8 @@ export class WsappService {
         executablePath: '/usr/bin/chromium-browser',
       }, */
     });
+
+    this.meUrl = configService.getOrThrow('me.url');
 
     this.client = {
       status: WsappStatus.OFF,
@@ -51,6 +62,21 @@ export class WsappService {
 
   public setHandleReady(func: typeof this._onReady) {
     this._onReady = func;
+  }
+
+  private async donwloadMediaMessage(media: MessageMedia, messageId: string) {
+    const extension = mimeExtension(media.mimetype) || 'bin';
+    const fileName = `${messageId}.${extension}`;
+    const filePath = getPublicPath('./images/', fileName);
+
+    try {
+      // Escribir archivo en disco
+      await writeFile(filePath, media.data, 'base64');
+    } catch (_error) {
+      return null;
+    }
+
+    return `${this.meUrl}/images/${fileName}`;
   }
 
   public init(): void {
@@ -94,6 +120,28 @@ export class WsappService {
 
     this.wsapp.on('message', async (data) => {
       const chat = await data.getChat();
+      let mediaUrl: string | undefined = undefined;
+      let messageQuote: MessageQuote | undefined = undefined;
+
+      if (data.hasMedia) {
+        const media = await data.downloadMedia();
+        mediaUrl =
+          (await this.donwloadMediaMessage(media, data.id._serialized)) ??
+          undefined;
+      }
+
+      if (data.hasQuotedMsg) {
+        const quote = await data.getQuotedMessage();
+
+        messageQuote = {
+          type: quote.type as string,
+          messageId: data.id._serialized,
+          author: data.author || data.from, // ID del autor (en grupo); si es individual, usa 'from'
+          senderId: data.author || data.from,
+          timestamp: data.timestamp,
+          body: data.body,
+        };
+      }
 
       this.eventEmitter.emit(NEW_MESSAGE_EVENT_NAME, {
         messageId: data.id._serialized, // ID única del mensaje
@@ -112,6 +160,8 @@ export class WsappService {
         mentionedIds: data.mentionedIds?.map((item) => item._serialized), // IDs mencionados
         groupMentions: data.groupMentions, // Menciones de grupo internas
         links: data.links,
+        media: mediaUrl,
+        quoute: messageQuote,
       } as NewMessageEvent);
     });
 

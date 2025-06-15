@@ -7,5 +7,8 @@ export default () => {
     mongo: {
       uri: process.env.MONGO_URI || 'mongodb://localhost/wsapp',
     },
+    me: {
+      url: process.env.ME_URL || 'http://localhost:3000',
+    },
   };
 };

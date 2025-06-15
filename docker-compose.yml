@@ -32,13 +32,15 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - MONGO_URI=mongodb://wsapp:hola123xD@mongo:27017/
+      - URL_ME=http://automatize.darkmelon.com:8822
     depends_on:
       - redis
       - mongo
     volumes:
       - appauth:/usr/src/app/.wwebjs_auth
       - appcache:/usr/src/app/.wwebjs_cache
-      - ./data:/usr/src/app/.wwebjs_cache
+      - ./data:/usr/src/app/data
+      - ./public:/usr/src/app/public
 
 volumes:
   redisdata:

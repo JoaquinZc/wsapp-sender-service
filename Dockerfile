@@ -100,8 +100,11 @@ WORKDIR /usr/src/app
 
 RUN mkdir .wwebjs_auth
 RUN mkdir .wwebjs_cache
+RUN mkdir public
+RUN mkdir public/images
 RUN chown -R node:node /usr/src/app/.wwebjs_auth
 RUN chown -R node:node /usr/src/app/.wwebjs_cache
+RUN chown -R node:node /usr/src/app/public
 
 # Copy the bundled code from the build stage to the production image
 COPY --chown=node:node package.json ./

@@ -1,5 +1,11 @@
 export const NEW_MESSAGE_EVENT_NAME = 'event.message.new';
 
+export interface MessageQuote
+  extends Pick<
+    NewMessageEvent,
+    'messageId' | 'type' | 'body' | 'author' | 'senderId' | 'timestamp'
+  > {}
+
 export interface NewMessageEvent {
   messageId: string; // ID único del mensaje
   body: string; // Cuerpo del mensaje
@@ -17,4 +23,6 @@ export interface NewMessageEvent {
   mentionedIds?: string[]; // Lista de IDs mencionados en el mensaje
   groupMentions?: any[]; // Menciones internas del grupo (opcional)
   links?: { link: string }[]; // Enlaces encontrados en el mensaje
+  media?: string;
+  quoute?: MessageQuote;
 }
