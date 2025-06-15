@@ -19,6 +19,7 @@ export class WsappService {
   private readonly client: Wsapp;
   private _onReady?: (isReady: boolean) => void;
   private meUrl: string;
+  private logger = new Logger(WsappService.name);
 
   static timeoutLogin = 1000 * 60 * 2; // 2minutos
 
@@ -70,9 +71,20 @@ export class WsappService {
     const filePath = getPublicPath('./images/', fileName);
 
     try {
+      this.logger.log(
+        `>> [DOWNLOAD MEDIA]: Download media ${extension} to ${fileName}.`,
+      );
+
       // Escribir archivo en disco
       await writeFile(filePath, media.data, 'base64');
+
+      this.logger.log(
+        `>> [DOWNLOAD MEDIA]: Download media ${extension} to ${fileName} is completed.`,
+      );
     } catch (_error) {
+      this.logger.log(
+        `>> [DOWNLOAD MEDIA]: Download media ${extension} to ${fileName} was failed.`,
+      );
       return null;
     }
 
@@ -95,7 +107,7 @@ export class WsappService {
 
     // Cambiamos el estado
     this.client.status = WsappStatus.WAITNG;
-    Logger.log('>> [Wsapp service]: Is Waiting...');
+    this.logger.log('>> [Wsapp service]: Is Waiting...');
 
     // Creamos el Timeout, si no se cumple en cierto tiempo finaliza el servicio
     // y se requiere volver a iniciar
@@ -105,7 +117,7 @@ export class WsappService {
     // si el evento pasa a "ready" que sería ya con la cuenta iniciada
     // entonces cambiará el estado y eliminará el timeout
     this.wsapp.once('ready', () => {
-      Logger.log('>> [Wsapp service]: Is ready');
+      this.logger.log('>> [Wsapp service]: Is ready');
       this.client.status = WsappStatus.READY;
       this._onReady && this._onReady(true);
       clearTimeout(timer);
@@ -177,7 +189,7 @@ export class WsappService {
   public async end(): Promise<void> {
     await this.wsapp.destroy();
     this.client.status = WsappStatus.OFF;
-    Logger.log('>> [Wsapp service]: Is end.');
+    this.logger.log('>> [Wsapp service]: Is end.');
     this._onReady && this._onReady(false);
 
     // Eliminar los eventos.
@@ -186,7 +198,7 @@ export class WsappService {
 
   private initEvents(): void {
     this.wsapp.addListener('qr', (qr: string) => {
-      Logger.log(`>> [Wsapp service]: QR ${qr}`);
+      this.logger.log(`>> [Wsapp service]: QR ${qr}`);
       this.client.qrCode = qr;
     });
 
