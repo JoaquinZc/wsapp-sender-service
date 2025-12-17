@@ -32,7 +32,7 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - MONGO_URI=mongodb://wsapp:hola123xD@mongo:27017/
-      - ME_URL=http://automatize.darkmelon.com:8822
+      - ME_URL=http://s-ws.darkmelon.com:8822
     depends_on:
       - redis
       - mongo
