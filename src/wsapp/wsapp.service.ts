@@ -132,15 +132,16 @@ export class WsappService {
 
     this.wsapp.on('message', async (data) => {
       const chat = await data.getChat();
-      let mediaUrl: string | undefined = undefined;
+      // CAPANDO EL DOWNLOAD MEDIA
+      //let mediaUrl: string | undefined = undefined;
       let messageQuote: MessageQuote | undefined = undefined;
 
-      if (data.hasMedia) {
-        const media = await data.downloadMedia();
-        mediaUrl =
-          (await this.donwloadMediaMessage(media, data.id._serialized)) ??
-          undefined;
-      }
+      //if (data.hasMedia) {
+      //  const media = await data.downloadMedia();
+      //  mediaUrl =
+      //    (await this.donwloadMediaMessage(media, data.id._serialized)) ??
+      //    undefined;
+      //}
 
       if (data.hasQuotedMsg) {
         const quote = await data.getQuotedMessage();
@@ -169,10 +170,11 @@ export class WsappService {
         hasMedia: data.hasMedia, // Si tiene medios
         isForwarded: data.isForwarded, // Si fue reenviado
         isEphemeral: data.isEphemeral, // Si es efímero
-        mentionedIds: data.mentionedIds?.map((item) => item._serialized), // IDs mencionados
+        //mentionedIds: data.mentionedIds?.map((item) => item._serialized), // IDs mencionados
+        mentionedIds: data.mentionedIds, // IDs mencionados
         groupMentions: data.groupMentions, // Menciones de grupo internas
         links: data.links,
-        media: mediaUrl,
+        //media: mediaUrl,
         quoute: messageQuote,
       } as NewMessageEvent);
     });
